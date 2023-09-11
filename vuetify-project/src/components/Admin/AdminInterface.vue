@@ -80,48 +80,46 @@
   </div>
   <hr/>
 
+  <h1 class="text-h4">Your Posts</h1>
   <div class="form-outline">
-    <div class="col-5">
+    <div class="col-3">
+      <span>Search</span>
       <input type="search" v-model="search" id="form1" class="form-control" placeholder="Type query"
              aria-label="Search"/>
     </div>
   </div>
 
-  <v-card>
-    <v-list>
 
+  <v-card class="mx-auto mt-4" max-width="400" v-for="note in searchMethod" :key="note.id">
+    <v-img lass="align-end text-white" height="300" :src="note.img" :alt="note.title"/>
+    <v-card-subtitle>Posted in - {{ note.date }} {{ note.time }}</v-card-subtitle>
+    <v-card-title>
 
-      <v-list-item v-for="note in searchMethod" :key="note.id">
-        <v-list><img :src="note.img" :alt="note.title" style="width: 20%; height: 20%"/></v-list>
-        <v-list-item-title>Posted in - {{ note.date }} {{ note.time }}</v-list-item-title>
-        <v-list-item-action>
-          <div class="col-4">
-            <p class="text-left text-h6">{{ note.title }}</p>
-          </div>
-        </v-list-item-action>
+      <p class="text-left text-h6">{{ note.title }}</p>
 
-        <v-list-item-action>
-          <div class="col-lg-4">
-            <p class="text-left">{{ note.txt }}</p>
-          </div>
-        </v-list-item-action>
+    </v-card-title>
 
-        <v-list-item-subtitle>
-         Category - {{ note.category }}
-        </v-list-item-subtitle>
-        <v-list-item-subtitle>Publisher - {{ note.userName }} {{ note.userSurname }}</v-list-item-subtitle>
-        <v-list-item-title v-if="note.detailTxT !== ''"><a class="link-underline" @click="routing(note.id)">More</a>
-        </v-list-item-title>
-        <div class="buttons mt-2">
-          <v-btn @click="deleteNews(note.id) " color="red">Remove Item</v-btn>
-          <br/>
-          <v-btn @click="update(note.id)" class="mt-2" color="grey">Update Item</v-btn>
-        </div>
-      </v-list-item>
+    <v-card-text>
 
+      <p class="text-left">{{ note.txt }}</p>
 
-    </v-list>
+    </v-card-text>
+
+    <v-card-subtitle>
+      Category - {{ note.category }}
+    </v-card-subtitle>
+    <v-card-subtitle>Publisher - {{ note.userName }} {{ note.userSurname }}</v-card-subtitle>
+    <v-card-title v-if="note.detailTxT !== ''">
+      <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover "
+         @click="routing(note.id)">More</a>
+    </v-card-title>
+    <div class="buttons mt-2 pb-4">
+      <v-btn @click="deleteNews(note.id) " color="red">Remove Item</v-btn>
+      <br/>
+      <v-btn @click="update(note.id)" class="mt-2" color="grey">Update Item</v-btn>
+    </div>
   </v-card>
+<ScrollTop/>
   <Footer class="mt-4"/>
 </template>
 
@@ -134,12 +132,13 @@ import {useCollection} from "vuefire";
 import {collection} from "firebase/firestore";
 import Header from "@/components/User/SiteComponent/Header.vue";
 import Footer from "@/components/User/SiteComponent/Footer.vue";
+import ScrollTop from "@/components/User/SiteComponent/ScrollTop.vue";
 
 
 export default defineComponent({
   name: "AdminInterface",
 
-  components: {Header, Footer},
+  components: {ScrollTop, Header, Footer},
   setup() {
     const newsList = useCollection(collection(db, 'news'));
     const router = useRouter()
@@ -249,26 +248,6 @@ export default defineComponent({
       news.detailTxT = '';
     }
 
-    // const login = () => {
-    //
-    //   const login = prompt("Login");
-    //   if (login === "admin" || login === "Admin") {
-    //     const password = prompt("Password");
-    //     if (password === "1111") {
-    //       router.push('/admin')
-    //       swal("Welcome")
-    //     } else {
-    //       swal("Routing to user...")
-    //       router.push('/home')
-    //     }
-    //   } else {
-    //     swal("Routing to user...")
-    //     router.push('/home')
-    //
-    //   }
-    //
-    // }
-    // onMounted(login)
 
     const routing = (id) => {
       router.push(`/article/${id}`)
@@ -294,6 +273,3 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-
-</style>

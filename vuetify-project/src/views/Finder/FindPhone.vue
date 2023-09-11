@@ -18,10 +18,8 @@
 
 <script lang="ts">
 import {defineComponent, ref, onMounted, computed, reactive} from "vue";
-import {createPhone, phoneCollection} from "@/firebase/storage";
-import {addDoc, collection, getDocs, query, where} from "firebase/firestore";
-
-import {useCollection} from "vuefire";
+import {createPhone} from "@/firebase/storage";
+import {collection, getDocs, query} from "firebase/firestore";
 import {db} from "@/firebase/storage";
 import Header from "@/components/User/SiteComponent/Header.vue";
 import Footer from "@/components/User/SiteComponent/Footer.vue";
@@ -75,7 +73,6 @@ export default defineComponent({
 
     return {
       createPhone,
-
       percentCollection,
       searchedPhone,
       phones,

@@ -76,9 +76,19 @@
 
       <section class="mb-4">
         <p class="font-monospace">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
-          repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
-          eum harum corrupti dicta, aliquam sequi voluptate quas.
+
+          <h5 class="text-uppercase font-monospace">Contact with us</h5>
+
+          <ul class="list-unstyled mb-0">
+            <li>
+              <a href="mailto:example2@hotmail.com?subject=Повідомлення&body=Доброго дня!" class="text-white font-monospace">example1@hotmail.com</a>
+            </li>
+            <li>
+              <a href="mailto:example2@hotmail.com?subject=Повідомлення&body=Доброго дня!" class="text-white font-monospace">example2@hotmail.com</a>
+            </li>
+
+          </ul>
+
         </p>
       </section>
 

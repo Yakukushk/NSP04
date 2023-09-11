@@ -4,11 +4,11 @@
 
   <div class="mt-4" v-for="news in newNewsArticle" :key="news.id">
     <v-img class="rounded mx-auto d-block" :src="news.img" style="width: 30%; height: 30%;"></v-img>
-    <p class="text-h4 mt-5">{{ news.title }}</p>
-    <p class="text-lg-h5">{{ news.txt }}</p>
-    <p class="text-lg-h5 mt-2 text-justify">{{ news.detailTxT }}</p>
-    <p class="text-lg-h5 mt-5 text-justify">Publisher - {{ news.userName}} {{news.userSurname}}</p>
-    <p class="text-lg-h5 text-justify">Posted - {{ news.date}} {{news.time}}</p>
+    <h3 class="mt-5 text-justify">{{ news.title }}</h3>
+    <p class="fs-5 text-justify mt-2">{{ news.txt }}</p>
+    <p class="fs-5 text-justify mt-2">{{ news.detailTxT }}</p>
+    <p class="fs-5 text-justify mt-5">Publisher - {{ news.userName}} {{news.userSurname}}</p>
+    <p class="fs-5 text-justify">Posted - {{ news.date}} {{news.time}}</p>
     <div class="card mt-2">
       <div class="card-body">
         <form @submit.prevent="submitForm(news)">
