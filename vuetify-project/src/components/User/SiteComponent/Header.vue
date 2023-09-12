@@ -15,40 +15,14 @@
 
 
         <li class="nav-item">
-          <a class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2">Admin
-            <v-dialog
-              v-model="dialog"
-              activator="parent"
-              persistent width="1000"
-            >
-              <v-card>
-                <v-card-text>
-                  <v-container>
-                    <form @submit.prevent="submit">
-                      <v-text-field
-                        v-model="adminValue.userName"
-                        :counter="10"
-                        label="Name"
-                      ></v-text-field>
+          <a v-if="!isAuthenticated"
+            class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2">Admin
+             <LoginPage/>
+          </a>
+          <a v-else
+             @click="router.push('/admin')"
+             class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2">Admin
 
-                      <v-text-field
-                        v-model="adminValue.userPassword"
-                        :counter="7"
-                        label="Password"
-                      ></v-text-field>
-                      <v-btn class="me-4" type="submit"> submit</v-btn>
-
-                    </form>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="dark" block @click="dialog = false"
-                  >Close Dialog
-                  </v-btn
-                  >
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
           </a>
         </li>
         <li class="nav-item" aria-current="page">
@@ -64,24 +38,34 @@
 
 <script lang="ts">
 
-import {defineComponent, reactive, ref} from "vue";
+import {computed, defineComponent, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useCollection} from "vuefire";
 import {collection} from "firebase/firestore";
 import {db} from "@/firebase/country";
+import LoginPage from "@/components/Admin/LoginPage.vue";
+
+import {getAuth} from "firebase/auth";
 
 
 export default defineComponent({
+  // eslint-disable-next-line vue/no-reserved-component-names
   name: "Header",
+  components: {LoginPage},
+  computed: {
+    LoginPage() {
+      return LoginPage
+    }
+  },
   setup() {
+    const isAuthenticated = computed(() => {
+      return computed(() => getAuth().currentUser !== null);
+    })
+
     const router = useRouter();
     const dialog = ref(false);
     const newsList = useCollection(collection(db, 'news'))
-    const adminValue = reactive({
-      userName: '',
-      userPassword: ''
 
-    })
     const colors = ref([
       'indigo',
       'warning',
@@ -92,27 +76,27 @@ export default defineComponent({
     const slides = ref([
       'First', 'Second', 'Third'
     ])
-    const submit = () => {
-
-      if (adminValue.userName === "admin" || adminValue.userName === "Admin") {
-
-        if (adminValue.userPassword === "1111") {
-          router.push('/admin')
-          swal("Welcome")
-        } else {
-          swal("Routing to user...")
-          router.push('/home')
-        }
-      } else {
-        swal("Routing to user...")
-        router.push('/home')
-
-      }
-
-    }
+    // const submit = () => {
+    //
+    //   if (adminValue.userName === "admin" || adminValue.userName === "Admin") {
+    //
+    //     if (adminValue.userPassword === "1111") {
+    //       router.push('/admin')
+    //       swal("Welcome")
+    //     } else {
+    //       swal("Routing to user...")
+    //       router.push('/home')
+    //     }
+    //   } else {
+    //     swal("Routing to user...")
+    //     router.push('/home')
+    //
+    //   }
+    //
+    // }
 
     return {
-      router, dialog, adminValue, submit, colors, slides, newsList
+      router, dialog,  colors, slides, newsList, isAuthenticated
     }
   }
 })

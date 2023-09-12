@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "vuefirebase-7e2b7"
-  }
+    "default": "vuefirebase-7e2b7",
+    "y": "vuefirebase-7e2b7"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -1,9 +1,7 @@
 // Import the functions you need from the SDKs you need
 import {initializeApp} from "firebase/app";
-import {getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, setDoc, limit} from 'firebase/firestore';
-import {onUnmounted, ref} from "vue"
-import {getAnalytics} from "firebase/analytics";
-import {noteCollection} from "@/firebase/firebase";
+import {getFirestore, collection, addDoc, doc, updateDoc, deleteDoc} from 'firebase/firestore';
+import {getAuth} from "firebase/auth";
 import {getStorage} from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,7 +19,7 @@ export const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 export const newsCollection = collection(db, 'news')
@@ -34,7 +32,8 @@ export const deleteNews = async (id) => {
   const noteDocID = doc(newsCollection, id)
   await deleteDoc(noteDocID)
 }
-export const updateNews = async(id, news) => {
+export const updateNews = async (id, news) => {
   const noteDocID = doc(newsCollection, id)
   await updateDoc(noteDocID, news)
 }
+

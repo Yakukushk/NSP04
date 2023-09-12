@@ -32,7 +32,9 @@
     v-model="selectedCategory"
     class="mt-4"
   ></v-select>
+  <div v-if="shouldRenderContent">
   <RecentPosts :news="newsList"/>
+  </div>
   <v-card
     class="mx-auto mt-4"
     max-width="400"
@@ -66,7 +68,7 @@
       <img class="mb-2" src="https://www.svgrepo.com/show/521832/share-1.svg" alt="share"
            style="width: 25px; height: 25px;">
      <a v-if="news.shared" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-         :href='sharedLink(news)'>{{ sharedLink(news) }}</a>
+         :href='sharedCopyLink(news)'></a>
     </i>
 
   </v-card>
@@ -76,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, onMounted, ref} from "vue";
 import { db } from "@/firebase/country";
 import {useCollection} from "vuefire";
 import {collection, doc, updateDoc} from "firebase/firestore";
@@ -99,7 +101,6 @@ export default defineComponent({
     const router = useRouter();
     const disliked = ref(false);
     const liked = ref(false);
-
 
     const toggleReaction = async (news, reaction) => {
       const newRef = doc(db, 'news', news.id);
@@ -149,6 +150,10 @@ export default defineComponent({
       });
       return sortedNews.slice(0,4)
     })
+    const sharedCopyLink = (news) => {
+      navigator.clipboard.writeText(`https://vuefirebase-7e2b7.web.app/#/article/${news.id}`)
+      swal("Copied Link!")
+    }
     const sharedLink = (news) => {
       return `#/article/${news.id}`
     }
@@ -171,6 +176,13 @@ export default defineComponent({
     }
 
 
+    const shouldRenderContent = ref(window.innerWidth > 758);
+    const updateWindowSize = () => {
+      shouldRenderContent.value = window.innerWidth > 758;
+    };
+    onMounted(() => window.addEventListener("resize", updateWindowSize))
+
+
     return {
       newsList,
       router,
@@ -182,7 +194,9 @@ export default defineComponent({
       routing,
       sharedPost,
       sharedLink,
-      limitedNewsList
+      limitedNewsList,
+      shouldRenderContent,
+      sharedCopyLink
     }
   }
 })
