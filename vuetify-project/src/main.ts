@@ -10,6 +10,7 @@ import {createVuetify} from 'vuetify';
 import {firebaseApp} from './firebase/country';
 import {VueFire, VueFireAuth} from 'vuefire';
 import {useDropzone} from "vue3-dropzone";
+
 // @ts-ignore
 import {swal} from 'sweetalert';
 import {createPinia} from "pinia";

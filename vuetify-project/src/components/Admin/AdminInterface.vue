@@ -71,7 +71,6 @@
             ></v-textarea>
 
 
-
             <v-spacer></v-spacer>
             <div class="mt-2">
               <span class="text-h6">Detail Text</span>
@@ -100,8 +99,41 @@
             <div>
               <span class="text-h6">Typing your Image</span>
               <br/>
-              <v-file-input class="mb-4" type="file" ref="myfile" @change="fileChange"/>
-              <v-btn @click="uploadImage">upload</v-btn>
+              <v-file-input v-if="imageShow === true"
+                label="File input"
+                variant="filled"
+                accept="image/png, image/jpeg, image/bmp"
+                prepend-icon="mdi-camera" class="mb-4" type="file" ref="myfile" @change="fileChange"/>
+              <v-file-input v-if="imageShow === false"
+                            label="File input"
+                            variant="filled"
+                            accept="image/png, image/jpeg, image/bmp"
+                            prepend-icon="mdi-camera" class="mb-4" type="file" ref="myfile" @change="fileChange"/>
+              <div v-if="imageShow === true">
+                <div class="d-flex flex-column col-md-2">
+                  <div>
+                    <v-slider
+                      v-model="widthSlider"
+                      thumb-label
+                      label="Width"
+                      :max="max"
+                      :min="min"
+                    ></v-slider>
+                  </div>
+                </div>
+
+                <v-img
+                  class="mx-auto"
+                  :width="widthSlider"
+                  aspect-ratio="1/1"
+                  cover
+                  align-self="center"
+                  :src="news.img"
+                ></v-img>
+              </div>
+              <v-btn @click="uploadImage" class="mb-2">upload</v-btn>
+              <br/>
+              <v-btn v-if="imageShow === true" @click="deleteImage" color="red">Remove Item</v-btn>
             </div>
           </v-window-item>
         </v-window>
@@ -110,7 +142,6 @@
     </v-card>
 
   </v-form>
-
 
 
   <h1 class="text-h4 mt-4">Your Posts</h1>
@@ -152,19 +183,19 @@
       <v-btn @click="update(note.id)" class="mt-2" color="grey">Update Item</v-btn>
     </div>
   </v-card>
-<ScrollTop/>
+  <ScrollTop/>
   <Footer class="mt-4"/>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, reactive, ref} from "vue";
 import {createNews, db, deleteNews, storageNews, updateNews} from "@/firebase/country";
-import {uploadBytes, getDownloadURL, ref as storageRef} from "firebase/storage"
+import {uploadBytes, getDownloadURL, ref as storageRef, deleteObject } from "firebase/storage"
 import {useRouter} from "vue-router";
 import {useCollection} from "vuefire";
 import {collection} from "firebase/firestore";
-import Header from "@/components/User/SiteComponent/Header.vue";
-import Footer from "@/components/User/SiteComponent/Footer.vue";
+import HeaderComponent from "@/components/User/SiteComponent/Header.vue";
+import FooterComponent from "@/components/User/SiteComponent/Footer.vue";
 import ScrollTop from "@/components/User/SiteComponent/ScrollTop.vue";
 import swal from "sweetalert";
 
@@ -172,13 +203,16 @@ import swal from "sweetalert";
 export default defineComponent({
   name: "AdminInterface",
 
-  components: {ScrollTop, Header, Footer},
+  components: {ScrollTop, Header: HeaderComponent, Footer: FooterComponent},
   setup() {
     const newsList = useCollection(collection(db, 'news'));
     const router = useRouter()
     const selectedFile = ref(null);
-    const imagePath = reactive({})
     let imageUrl;
+    const min = ref(100)
+    const max = ref( 300)
+    const widthSlider = ref(300);
+    const imageShow = ref(false);
     const time = new Date();
     const search = ref('');
     const show = ref(false);
@@ -232,13 +266,32 @@ export default defineComponent({
       try {
         const snapshot = await uploadBytes(storageReference, file);
         swal('File uploaded', snapshot)
-        console.log('File uploaded:', snapshot);
-
+        imageShow.value = true;
         imageUrl = await getDownloadURL(storageReference);
         news.img = imageUrl;
       } catch (error) {
         console.error('Error uploading file:', error);
       }
+    };
+    const deleteImage = async () => {
+      if (!selectedFile.value) return;
+      const file = selectedFile.value;
+      const storageReference = storageRef(storageNews, `images/${file.name}`);
+      try {
+        await deleteObject(storageReference)
+          .then(() => {
+            imageShow.value = false;
+            !selectedFile.value;
+            swal("Item Removed")
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+
+
     };
 
 
@@ -271,7 +324,7 @@ export default defineComponent({
       news.title = '';
       news.txt = '';
       news.img = '';
-
+      imageShow.value = false;
 
     }
     const cleanData = () => {
@@ -281,8 +334,6 @@ export default defineComponent({
       news.title = '';
       news.detailTxT = '';
     }
-
-
 
 
     const routing = (id) => {
@@ -295,7 +346,6 @@ export default defineComponent({
       deleteNews,
       update,
       uploadImage,
-      imagePath,
       fileChange,
       imageUrl,
       search,
@@ -303,7 +353,11 @@ export default defineComponent({
       cleanData,
       show,
       routing,
-      tab
+      tab,
+      imageShow,
+      widthSlider,
+      min,max,
+      deleteImage
     }
 
   }
