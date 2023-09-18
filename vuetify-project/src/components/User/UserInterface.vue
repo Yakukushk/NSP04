@@ -33,7 +33,7 @@
     class="mt-4"
   ></v-select>
   <div v-if="shouldRenderContent">
-  <RecentPosts :news="newsList"/>
+    <RecentPosts :news="newsList"/>
   </div>
   <v-card
     class="mx-auto mt-4"
@@ -54,8 +54,11 @@
     <v-card-title>{{ news.title }}</v-card-title>
     <v-card-subtitle>Posted in - {{ news.date }} {{ news.time }}</v-card-subtitle>
     <v-card-text>{{ news.txt }}</v-card-text>
-    <v-card-text v-if="news.detailTxT !== ''"><a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" @click="routing(news.id)">More</a></v-card-text>
+    <v-card-text v-if="news.detailTxT !== ''"><a
+      class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+      @click="routing(news.id)">More</a></v-card-text>
     <v-card-text>Publisher - {{ news.userName }} {{ news.userSurname }}</v-card-text>
+
 
     <button @click="likePost(news)" class="btn mb-2" id="like"><i
       class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
@@ -64,49 +67,58 @@
       class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
     {{ news.dislike }}
 
-    <i class="pa-3" @click="sharedPost(news)">
+    <button class="pa-3" @click="sharedCopyLink(news)" id="share">
       <img class="mb-2" src="https://www.svgrepo.com/show/521832/share-1.svg" alt="share"
            style="width: 25px; height: 25px;">
-     <a v-if="news.shared" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-         :href='sharedCopyLink(news)'></a>
-    </i>
-
+    </button>
+    <button v-if="storagePinia.isAuthenticated" @click.prevent="router.push('/admin')">
+      <img class="mb-2" src="https://www.svgrepo.com/show/486689/goto.svg" alt="change"
+           style="width: 25px; height: 25px;">
+    </button>
   </v-card>
 
-<ScrollTop/>
+  <ScrollTop/>
   <Footer class="mt-4"/>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from "vue";
-import { db } from "@/firebase/country";
+import {db, newsCollection} from "@/firebase/country";
 import {useCollection} from "vuefire";
 import {collection, doc, updateDoc} from "firebase/firestore";
 import {useRouter} from "vue-router";
-import Header from "@/components/User/SiteComponent/Header.vue";
-import Footer from "@/components/User/SiteComponent/Footer.vue";
+import HeaderComponent from "@/components/User/SiteComponent/Header.vue";
+import FooterComponent from "@/components/User/SiteComponent/Footer.vue";
 import ScrollTop from "@/components/User/SiteComponent/ScrollTop.vue";
 import RecentPosts from "@/components/User/SiteComponent/RecentPosts.vue";
+import {useStoragePinia} from "@/pinia/storage";
+import swal from "sweetalert";
+import {getAuth} from "firebase/auth";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
   name: "UserInterface",
   components: {
+    FontAwesomeIcon,
     RecentPosts,
     ScrollTop,
-    Footer,
-    Header
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Footer: FooterComponent,
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Header: HeaderComponent
   },
   setup() {
     const newsList = useCollection(collection(db, 'news'));
     const router = useRouter();
     const disliked = ref(false);
     const liked = ref(false);
+    const storagePinia = useStoragePinia();
 
     const toggleReaction = async (news, reaction) => {
       const newRef = doc(db, 'news', news.id);
       if (reaction === 'like') {
         if (!liked.value) {
-          news.like++;
+          news.like += 1;
           liked.value = true;
           await updateDoc(newRef, {like: news.like})
         }
@@ -119,7 +131,7 @@ export default defineComponent({
       }
       if (reaction === 'dislike') {
         if (!disliked.value) {
-          news.dislike++;
+          news.dislike += 1;
           disliked.value = true;
           await updateDoc(newRef, {dislike: news.dislike})
         }
@@ -130,25 +142,21 @@ export default defineComponent({
         }
       }
     }
-    const likePost = async(news) => {
-      toggleReaction(news, 'like')
+    const likePost = async (news) => {
+      await toggleReaction(news, 'like')
     }
 
     const dislikePost = async (news) => {
-      toggleReaction(news, 'dislike')
+      await toggleReaction(news, 'dislike')
     }
 
-    const sharedPost = (news) => {
-      news.shared = !news.shared
-    }
-    // eslint-disable-next-line vue/return-in-computed-property
     const limitedNewsList = computed(() => {
-      const sortedNews = newsList.value.slice().sort((a,b) => {
+      const sortedNews = newsList.value.slice().sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateB - dateA;
       });
-      return sortedNews.slice(0,4)
+      return sortedNews.slice(0, 4)
     })
     const sharedCopyLink = (news) => {
       navigator.clipboard.writeText(`https://vuefirebase-7e2b7.web.app/#/article/${news.id}`)
@@ -169,19 +177,15 @@ export default defineComponent({
         return newsList.value.filter((category) => category.category === selectedCategory.value)
       }
     })
-
-
     const routing = (id) => {
       router.push(`/article/${id}`)
     }
-
-
     const shouldRenderContent = ref(window.innerWidth > 758);
     const updateWindowSize = () => {
       shouldRenderContent.value = window.innerWidth > 758;
     };
     onMounted(() => window.addEventListener("resize", updateWindowSize))
-
+    onMounted(() => getAuth().currentUser === null);
 
     return {
       newsList,
@@ -192,11 +196,11 @@ export default defineComponent({
       likePost,
       dislikePost,
       routing,
-      sharedPost,
       sharedLink,
       limitedNewsList,
       shouldRenderContent,
-      sharedCopyLink
+      sharedCopyLink,
+      storagePinia
     }
   }
 })

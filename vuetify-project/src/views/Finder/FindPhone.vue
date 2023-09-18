@@ -1,5 +1,5 @@
 <template>
-  <Header/>
+  <HeaderComponent/>
   <div>
     <input v-model="search" placeholder="Search by Percent...">
   </div>
@@ -13,33 +13,27 @@
       </v-list-item-subtitle>
     </v-list-item>
   </v-list>
-  <Footer class="mt-4"/>
+  <FooterComponent class="mt-4"/>
 </template>
 
 <script lang="ts">
 import {defineComponent, ref, onMounted, computed, reactive} from "vue";
-import {createPhone} from "@/firebase/storage";
+import {createPhone} from "@/firebase/country";
 import {collection, getDocs, query} from "firebase/firestore";
-import {db} from "@/firebase/storage";
-import Header from "@/components/User/SiteComponent/Header.vue";
-import Footer from "@/components/User/SiteComponent/Footer.vue";
+import {db} from "@/firebase/country";
+import HeaderComponent from "@/components/User/SiteComponent/Header.vue";
+import FooterComponent from "@/components/User/SiteComponent/Footer.vue";
 
 let id = 0;
 export default defineComponent({
   name: "FindPhone",
-  components: {Footer, Header},
+  // eslint-disable-next-line vue/no-unused-components
+  components: {FooterComponent, HeaderComponent},
   setup() {
-
-
     const phones = reactive([]);
-
     const percentMap = ref([]);
-
     const search = ref('');
-
-
     const percentCollection = collection(db, 'percent');
-
 
     async function getPhones() {
       const q = await getDocs(query(collection(db, 'phones')));
@@ -48,9 +42,7 @@ export default defineComponent({
       });
     }
 
-
     onMounted(getPhones);
-
 
     async function getNewPercent() {
       const percentageDocs = await getDocs(percentCollection);
@@ -62,6 +54,7 @@ export default defineComponent({
     }
 
     onMounted(getNewPercent)
+
     const searchedPhone = computed(() => {
       return phones.filter((product) => {
         return (

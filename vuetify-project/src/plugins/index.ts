@@ -14,6 +14,7 @@ import type { App } from 'vue'
 
 export function registerPlugins (app: App) {
   loadFonts()
+  // @ts-ignore
   app
     .use(vuetify)
     .use(router)

@@ -4,20 +4,20 @@
     v-model="dialog"
     activator="parent"
     persistent width="1000"
-    v-if="isAuthenticated"
+    v-if="!isAuthenticated"
   >
     <v-card>
       <v-card-text>
         <v-container>
           <form @submit.prevent="submit">
             <v-text-field
-              v-model="adminValue.userName"
+              v-model="storagePinia.adminValue.userName"
               :counter="10"
               label="Name"
             ></v-text-field>
 
             <v-text-field
-              v-model="adminValue.userPassword"
+              v-model="storagePinia.adminValue.userPassword"
               :counter="7"
               label="Password"
             ></v-text-field>
@@ -38,70 +38,41 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, reactive, ref} from "vue";
+import {defineComponent, onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
-import {useCollection} from "vuefire";
-import {collection} from "firebase/firestore";
-import {db} from "../../firebase/country";
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence  } from 'firebase/auth'
-
-
-
+import {useStoragePinia} from "@/pinia/storage";
+import {db, auth} from "../../firebase/country";
+import {signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence} from 'firebase/auth'
+import swal from "sweetalert";
 
 
 export default defineComponent({
   name: "LoginPage",
 
-  setup(){
-    const router = useRouter();
-
+  setup() {
+    const storagePinia = useStoragePinia();
     const dialog = ref(false);
-    const newsList = useCollection(collection(db, 'news'))
-    const isAuthenticated = computed(() => {
-      return computed(() => getAuth().currentUser !== null);
-    })
-
-
-
-const adminValue = reactive({
-      userName: '',
-      userPassword: ''
-
-    })
-
-    const submit = () => {
-      const auth = getAuth();
-      setPersistence(auth, browserLocalPersistence)
-        .then(() => {
-          return signInWithEmailAndPassword(auth, adminValue.userName, adminValue.userPassword)
-            .then((userCredential) => {
-              const user = userCredential.user;
-              console.log('Successfully logged in!', user);
-              isAuthenticated.value
-              router.push('/admin');
-
-            })
-            .catch(error => {
-              !isAuthenticated.value
-              swal(error.message);
-
-
-            })
+    const isAuthenticated = ref(false);
+    const submit = async () => {
+      await signInWithEmailAndPassword(auth, storagePinia.adminValue.userName, storagePinia.adminValue.userPassword)
+        .then((userCredential) => {
+         console.log(userCredential)
+          swal("Welcome!")
         })
-        .catch((error) => {
+        .catch(error => {
+          console.log(error)
+          swal("Incorrect Values")
+        })
 
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
-        });
+
     };
 
     return {
       dialog,
-      newsList,
       submit,
-      isAuthenticated,
-      adminValue
+      storagePinia,
+      isAuthenticated
+
     }
   }
 })

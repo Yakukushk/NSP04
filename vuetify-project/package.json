@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@mdi/font": "7.0.96",
     "bootstrap": "^5.3.1",
@@ -18,9 +21,12 @@
     "firebase": "^10.3.1",
     "pinia": "^2.1.6",
     "roboto-fontface": "*",
+    "sweetalert": "^2.1.2",
     "vue": "^3.2.0",
     "vue-google-charts": "^1.1.0",
     "vue-router": "^4.0.0",
+    "vue3-dropzone": "^2.1.2",
+    "vuefire": "^3.1.17",
     "vuetify": "^3.0.0",
     "webfontloader": "^1.0.0"
   },

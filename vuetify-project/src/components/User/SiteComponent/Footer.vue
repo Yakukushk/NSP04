@@ -11,49 +11,18 @@
         </a>
 
 
-        <a class="btn btn-outline-light btn-floating m-1" role="button"
+        <a v-if="!isAuthenticated" class="btn btn-outline-light btn-floating m-1" role="button"
         ><img src="https://www.svgrepo.com/show/178093/user-social.svg" alt="admin" style="height: 40px; width: 40px"/>
-          <v-dialog
-            v-model="dialog"
-            activator="parent"
-            persistent width="1000"
-          >
-            <v-card>
-              <v-card-text>
-                <v-container>
-                  <form @submit.prevent="submit">
-                    <v-text-field
-                      v-model="adminValue.userName"
-                      :counter="10"
-                      label="Name"
-                    ></v-text-field>
-
-                    <v-text-field
-                      v-model="adminValue.userPassword"
-                      :counter="7"
-                      label="Password"
-                    ></v-text-field>
-                    <v-btn class="me-4" type="submit"> submit</v-btn>
-
-                  </form>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="dark" block @click="dialog = false"
-                >Close Dialog
-                </v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+         <LoginPage/>
         </a>
+        <a v-else class="btn btn-outline-light btn-floating m-1" role="button" @click="router.push('/admin')"
+        ><img src="https://www.svgrepo.com/show/178093/user-social.svg" alt="admin" style="height: 40px; width: 40px"/>
 
-
+        </a>
         <a class="btn btn-outline-light btn-floating m-1" @click="router.push('/phone')" role="button"
         ><img src="https://www.svgrepo.com/show/474992/smartphone-tablet.svg" alt="phone"
               style="height: 40px; width: 40px"/>
         </a>
-
 
       </section>
 
@@ -104,14 +73,19 @@
 <script lang="ts">
 import {defineComponent, ref, reactive} from "vue";
 import {useRouter} from "vue-router";
-
+import {storeToRefs} from "pinia";
+import {useStoragePinia} from "@/pinia/storage";
+import LoginPage from "@/components/Admin/LoginPage.vue";
 
 export default defineComponent({
-  name: "Footer",
+  name: "FooterComponent",
+  components: {LoginPage},
   setup() {
     const links = ref(['Home', 'Admin', 'Phone'])
     const router = useRouter();
     const dialog = ref(false);
+    const store = useStoragePinia();
+    const {isAuthenticated} = storeToRefs(store);
     const adminValue = reactive({
       userName: '',
       userPassword: ''
@@ -140,7 +114,8 @@ export default defineComponent({
       router,
       adminValue,
       dialog,
-      submit
+      submit,
+      isAuthenticated
     }
   }
 })

@@ -10,14 +10,16 @@
 
       <ol class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2" style="color: white;" @click="router.push('/')">Home</a>
+          <a
+            class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2"
+            style="color: white;" @click="router.push('/')">Home</a>
         </li>
 
 
         <li class="nav-item">
           <a v-if="!isAuthenticated"
-            class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2">Admin
-             <LoginPage/>
+             class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2">Admin
+            <LoginPage/>
           </a>
           <a v-else
              @click="router.push('/admin')"
@@ -26,7 +28,14 @@
           </a>
         </li>
         <li class="nav-item" aria-current="page">
-          <a class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2" style="color: white;" @click="router.push('/phone')">Phone</a>
+          <a
+            class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2"
+            style="color: white;" @click="router.push('/phone')">Phone</a>
+        </li>
+        <li class="nav-item" aria-current="page">
+          <a v-if="isAuthenticated"
+             class="font-monospace link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ma-2"
+             style="color: white;" @click="store.logOutFunction()">LogOut</a>
         </li>
       </ol>
 
@@ -38,19 +47,21 @@
 
 <script lang="ts">
 
-import {computed, defineComponent, reactive, ref} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {computed, defineComponent, onBeforeUnmount, onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 import {useCollection} from "vuefire";
 import {collection} from "firebase/firestore";
-import {db} from "@/firebase/country";
+import {useStoragePinia} from "@/pinia/storage";
+import {auth, db} from "@/firebase/country";
 import LoginPage from "@/components/Admin/LoginPage.vue";
-
-import {getAuth} from "firebase/auth";
+import {signOut} from "firebase/auth";
+import swal from "sweetalert";
+import {storeToRefs} from "pinia";
 
 
 export default defineComponent({
   // eslint-disable-next-line vue/no-reserved-component-names
-  name: "Header",
+  name: "HeaderComponent",
   components: {LoginPage},
   computed: {
     LoginPage() {
@@ -58,13 +69,17 @@ export default defineComponent({
     }
   },
   setup() {
-    const isAuthenticated = computed(() => {
-      return computed(() => getAuth().currentUser !== null);
-    })
-
+    // const storagePinia = useStoragePinia();
     const router = useRouter();
     const dialog = ref(false);
+    const store =  useStoragePinia();
+    const {isAuthenticated} =  storeToRefs(store);
     const newsList = useCollection(collection(db, 'news'))
+
+
+
+
+
 
     const colors = ref([
       'indigo',
@@ -76,27 +91,9 @@ export default defineComponent({
     const slides = ref([
       'First', 'Second', 'Third'
     ])
-    // const submit = () => {
-    //
-    //   if (adminValue.userName === "admin" || adminValue.userName === "Admin") {
-    //
-    //     if (adminValue.userPassword === "1111") {
-    //       router.push('/admin')
-    //       swal("Welcome")
-    //     } else {
-    //       swal("Routing to user...")
-    //       router.push('/home')
-    //     }
-    //   } else {
-    //     swal("Routing to user...")
-    //     router.push('/home')
-    //
-    //   }
-    //
-    // }
 
     return {
-      router, dialog,  colors, slides, newsList, isAuthenticated
+      router, dialog, colors, slides, newsList, isAuthenticated, store
     }
   }
 })

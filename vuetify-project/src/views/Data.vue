@@ -51,7 +51,7 @@
 import {defineComponent, reactive, ref, onMounted} from "vue";
 import {useCollection} from 'vuefire'
 import {collection} from 'firebase/firestore'
-import {createNote, db, updateNote, deleteNote, createCountry} from '@/firebase/firebase'
+import {createNote, db, updateNote, deleteNote, createCountry} from '@/firebase/country'
 
 let id = 0;
 

@@ -1,12 +1,19 @@
 import {createWebHashHistory, createRouter} from "vue-router";
 
+// @ts-ignore
 import Home from "@/views/Home.vue";
+// @ts-ignore
 import Data from "@/views/Data.vue"
+// @ts-ignore
 import FindPhone from "@/views/Finder/FindPhone.vue";
+// @ts-ignore
 import ArticleForm from "@/components/User/ArticleForm.vue";
 import {defineComponent} from "vue";
+// @ts-ignore
 import AdminInterface from "@/components/Admin/AdminInterface.vue";
+// @ts-ignore
 import UserInterface from "@/components/User/UserInterface.vue";
+// @ts-ignore
 import LoginPage from "@/components/Admin/LoginPage.vue"
 
 

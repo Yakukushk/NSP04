@@ -5,82 +5,115 @@
   <v-btn @click="cleanData">Clean Data</v-btn>
 
   <v-form class="mt-5" @submit.prevent="onSubmitForm">
+    <v-card>
+      <v-tabs
+        v-model="tab"
+        bg-color="white"
+      >
+        <v-tab value="one">
+          <img src="https://www.svgrepo.com/show/521210/post-it.svg" style="height: 20px; width: 20px"/>
+          Post
+        </v-tab>
+        <v-tab value="two">
+          <img src="https://www.svgrepo.com/show/521107/clip-2.svg" style="height: 20px; width: 20px"/>
+          Text
+        </v-tab>
+        <v-tab value="three">
+          <img src="https://www.svgrepo.com/show/521160/image.svg" style="height: 20px; width: 20px"/>
+          Image
+        </v-tab>
+      </v-tabs>
 
-    <span class="text-h6">Typing your Title</span>
-    <v-text-field
-      v-model="news.title"
-      class="mt-2"
+      <v-card-text>
+        <v-window v-model="tab">
+          <v-window-item value="one">
+            <span class="text-h6">Typing your Title</span>
+            <v-text-field
+              v-model="news.title"
+              class="mt-2"
 
-      required
-      hide-details
-    ></v-text-field>
-    <span class="text-h6">Typing your Name</span>
-    <v-text-field
-      v-model="news.userName"
-      class="mt-2"
+              required
+              hide-details
+            ></v-text-field>
+            <span class="text-h6">Typing your Name</span>
+            <v-text-field
+              v-model="news.userName"
+              class="mt-2"
 
-      required
-      hide-details
-    ></v-text-field>
-    <span class="text-h6">Typing your Surname</span>
-    <v-text-field
-      v-model="news.userSurname"
-      class="mt-2"
+              required
+              hide-details
+            ></v-text-field>
+            <span class="text-h6">Typing your Surname</span>
+            <v-text-field
+              v-model="news.userSurname"
+              class="mt-2"
 
-      required
-      hide-details
-    ></v-text-field>
-    <span class="text-h6">Typing your Text</span>
-    <v-textarea
-      v-model="news.txt"
+              required
+              hide-details
+            ></v-text-field>
+            <span class="text-h6">Choice your Category</span>
+            <v-select
+              v-model="news.category"
+              label="Select your Category"
+              :items="['Digital News', 'IT News', 'Blogs', 'All Categories']"
 
-      class="mt-2"
-      hide-details
-      required
-    ></v-textarea>
+            ></v-select>
+          </v-window-item>
+
+          <v-window-item value="two">
+            <span class="text-h6">Typing your Text</span>
+            <v-textarea
+              v-model="news.txt"
+
+              class="mt-2"
+              hide-details
+              required
+            ></v-textarea>
 
 
-    <span class="text-h6">Choice your Category</span>
-    <v-select
-      v-model="news.category"
-      label="Select your Category"
-      :items="['Digital News', 'IT News', 'Blogs', 'All Categories']"
 
-    ></v-select>
-    <v-spacer></v-spacer>
-    <div class="mt-2">
-      <span class="text-h6">Detail Text</span>
-      <v-btn
-        class="ma-2"
-        :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-        @click="show = !show"
-      ></v-btn>
-    </div>
-    <v-expand-transition>
-      <div v-show="show">
-        <v-divider></v-divider>
-        <span class="text-h6">Typing your Extra Information</span>
-        <v-textarea
-          v-model="news.detailTxT"
-          class="mt-2"
-          hide-details
-          required
-        ></v-textarea>
-      </div>
-    </v-expand-transition>
-    <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <div class="mt-2">
+              <span class="text-h6">Detail Text</span>
+              <v-btn
+                class="ma-2"
+                :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                @click="show = !show"
+              ></v-btn>
+            </div>
+            <v-expand-transition>
+              <div v-show="show">
+                <v-divider></v-divider>
+                <span class="text-h6">Typing your Extra Information</span>
+                <v-textarea
+                  v-model="news.detailTxT"
+                  class="mt-2"
+                  hide-details
+                  required
+                ></v-textarea>
+              </div>
+            </v-expand-transition>
+            <v-spacer></v-spacer>
+          </v-window-item>
 
-    <v-btn class="mt-4" type="submit">Add</v-btn>
+          <v-window-item value="three">
+            <div>
+              <span class="text-h6">Typing your Image</span>
+              <br/>
+              <v-file-input class="mb-4" type="file" ref="myfile" @change="fileChange"/>
+              <v-btn @click="uploadImage">upload</v-btn>
+            </div>
+          </v-window-item>
+        </v-window>
+        <v-btn class="mt-4" type="submit">Post</v-btn>
+      </v-card-text>
+    </v-card>
+
   </v-form>
-  <div>
-    <span class="text-h6">Typing your Image</span>
-    <br/>
-    <v-file-input class="mb-4" type="file" ref="myfile" @change="fileChange"/>
-    <v-btn @click="uploadImage">upload</v-btn>
-  </div>
-  <hr/>
 
-  <h1 class="text-h4">Your Posts</h1>
+
+
+  <h1 class="text-h4 mt-4">Your Posts</h1>
   <div class="form-outline">
     <div class="col-3">
       <span>Search</span>
@@ -133,6 +166,7 @@ import {collection} from "firebase/firestore";
 import Header from "@/components/User/SiteComponent/Header.vue";
 import Footer from "@/components/User/SiteComponent/Footer.vue";
 import ScrollTop from "@/components/User/SiteComponent/ScrollTop.vue";
+import swal from "sweetalert";
 
 
 export default defineComponent({
@@ -148,7 +182,7 @@ export default defineComponent({
     const time = new Date();
     const search = ref('');
     const show = ref(false);
-
+    const tab = ref(null);
     const news = reactive(
       {
         id: 0,
@@ -268,7 +302,8 @@ export default defineComponent({
       searchMethod,
       cleanData,
       show,
-      routing
+      routing,
+      tab
     }
 
   }
